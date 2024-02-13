@@ -140,6 +140,8 @@ maxval2 = float(data_float2.loc[:,1].max())
 
 ordenada = np.array([min(minval1, minval2), max(maxval1, maxval2)])
 
+input("Press Enter to continue...")
+
 for x in range (1, data_float1.loc[:,0].size):
     # Plot the position line
     if not x == 1:

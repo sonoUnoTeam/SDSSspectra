@@ -30,7 +30,7 @@ _math = PredefMathFunctions()
 # Sound configurations, predefined at the moment
 _simplesound.reproductor.set_continuous()
 _simplesound.reproductor.set_waveform('celesta')
-_simplesound.reproductor.set_time_base(0.05)
+_simplesound.reproductor.set_time_base(0.01)
 _simplesound.reproductor.set_min_freq(300)
 _simplesound.reproductor.set_max_freq(1500)
 # The argparse library is used to pass the path and extension where the data
@@ -47,6 +47,8 @@ parser.add_argument("-d2", "--directory2", type=str,
                     help="Indicate a directory to process as batch.")
 parser.add_argument("-d3", "--directory3", type=str,
                     help="Indicate a directory to process as batch.")
+parser.add_argument("-d4", "--directory4", type=str,
+                    help="Indicate a directory to process as batch.")
 # Indicate to save or not the plot
 parser.add_argument("-p", "--save-plot", type=bool,
                     help="Indicate if you want to save the plot (False as default)",
@@ -59,6 +61,7 @@ ext = args.file_type or 'txt'
 path1 = args.directory1
 path2 = args.directory2
 path3 = args.directory3
+path4 = args.directory4
 plot_flag = args.save_plot or True
 # Print a messege if path is not indicated by the user
 if not path1:
@@ -69,6 +72,9 @@ if not path2:
     exit()
 if not path3:
     print('3At least on intput must be stated.\nUse -h if you need help.')
+    exit()
+if not path4:
+    print('4At least on intput must be stated.\nUse -h if you need help.')
     exit()
 # Format the extension to use it with glob
 extension = '*.' + ext
@@ -88,12 +94,11 @@ if plot_flag:
 now = datetime.datetime.now()
 print(now.strftime('%Y-%m-%d_%H-%M-%S'))
 
-#for filename in glob.glob(os.path.join(path, extension)):
-print("Converting data file number "+str(i)+" to sound.")
 # Open each file
 data1, status, msg = _dataimport.set_arrayfromfile(path1, ext)
 data2, status, msg = _dataimport.set_arrayfromfile(path2, ext)
 data3, status, msg = _dataimport.set_arrayfromfile(path3, ext)
+data4, status, msg = _dataimport.set_arrayfromfile(path4, ext)
 # Convert into numpy, split in x and y and normalyze
 if data1.shape[1]<2:
     print("Error reading file 1, only detect one column.")
@@ -104,10 +109,14 @@ if data2.shape[1]<2:
 if data3.shape[1]<2:
     print("Error reading file 3, only detect one column.")
     exit()
+if data4.shape[1]<2:
+    print("Error reading file 4, only detect one column.")
+    exit()
 # Extract the names and turn to float
 data_float1 = data1.iloc[1:, 1:].astype(float)
 data_float2 = data2.iloc[1:, 1:].astype(float)
 data_float3 = data3.iloc[1:, 1:].astype(float)
+data_float4 = data4.iloc[1:, 1:].astype(float)
 
 # Cut first data set
 abs_val_array = np.abs(data_float1.loc[:,1] - 3700)
@@ -119,6 +128,8 @@ data_float1 = data1.iloc[x_pos_min:x_pos_max, :].astype(float)
 data_float2 = data2.iloc[x_pos_min:x_pos_max, :].astype(float)
 # Cut third data set
 data_float3 = data3.iloc[x_pos_min:x_pos_max, :].astype(float)
+# Cut fourth data set
+data_float4 = data4.iloc[x_pos_min:x_pos_max, :].astype(float)
 
 # Generate the plot if needed
 if plot_flag:
@@ -135,28 +146,31 @@ if plot_flag:
     #ax.plot(data_float1.loc[:,0], data_float1.loc[:,3], label='Sky Flux')
     #ax.plot(data_float2.loc[:,0], data_float2.loc[:,1], label='Flux-Double nucleus')
     
+    #First plot
     ax1 = plt.subplot(311)
     ax1.plot(data_float1.loc[:,1], data_float1.loc[:,2], label='O5 V')
+    ax1.plot(data_float4.loc[:,1], data_float4.loc[:,2], label='Unknown')
     #plt.tick_params('x', labelsize=6)
     ax1.tick_params('x', labelbottom=False)
 
-    # share x only
+    # Second plot
     ax2 = plt.subplot(312, sharex=ax1)
     ax2.plot(data_float2.loc[:,1], data_float2.loc[:,2], label='A5 V')
+    ax2.plot(data_float4.loc[:,1], data_float4.loc[:,2], label='Unknown')
     # make these tick labels invisible
     ax2.tick_params('x', labelbottom=False)
 
-    # share x and y
+    # Third plot
     ax3 = plt.subplot(313, sharex=ax1, sharey=ax1)
     ax3.plot(data_float3.loc[:,1], data_float3.loc[:,2], label='G0 V')
-    #plt.xlim(0.01, 5.0)
-    #plt.show()
+    ax3.plot(data_float4.loc[:,1], data_float4.loc[:,2], label='Unknown')
     
     ax1.legend()
     ax2.legend()
     ax3.legend()
+    plt.pause(0.05)
     # Set the path to save the plot and save it
-    plot_path = path1[:-4] + '_plot.png'
+    plot_path = path1[:-6] + 'plot.png'
     fig.savefig(plot_path)
     
 # Reproduction
@@ -164,6 +178,7 @@ if plot_flag:
 x1, y1, status = _math.normalize(data_float1.loc[:,1], data_float1.loc[:,2], init=x_pos_min)
 x2, y2, status = _math.normalize(data_float2.loc[:,1], data_float2.loc[:,2], init=x_pos_min)
 x3, y3, status = _math.normalize(data_float3.loc[:,1], data_float3.loc[:,2], init=x_pos_min)
+x4, y4, status = _math.normalize(data_float4.loc[:,1], data_float4.loc[:,2], init=x_pos_min)
 
 # Reproduction
 minval1 = float(data_float1.loc[:,2].min())
@@ -172,43 +187,78 @@ minval2 = float(data_float2.loc[:,2].min())
 maxval2 = float(data_float2.loc[:,2].max())
 minval3 = float(data_float3.loc[:,2].min())
 maxval3 = float(data_float3.loc[:,2].max())
+minval4 = float(data_float4.loc[:,2].min())
+maxval4 = float(data_float4.loc[:,2].max())
 
-ordenada1 = np.array([minval1, maxval1])
-ordenada2 = np.array([minval2, maxval2])
-ordenada3 = np.array([minval3, maxval3])
+ordenada1 = np.array([min(minval1,minval4), max(maxval1,maxval4)])
+ordenada2 = np.array([min(minval2,minval4), max(maxval2,maxval4)])
+ordenada3 = np.array([min(minval3,minval4), max(maxval3,maxval4)])
 
-for x in range (x_pos_min, x_pos_max):
-    # Plot the position line
-    if not x == x_pos_min:
-        line1 = red_line1.pop(0)
-        line1.remove()
-        line2 = red_line2.pop(0)
-        line2.remove()
-        line3 = red_line3.pop(0)
-        line3.remove()
-    abscisa = np.array([float(data_float1.loc[x,1]), float(data_float1.loc[x,1])])
-    red_line1 = ax1.plot(abscisa, ordenada1, 'r')
-    red_line2 = ax2.plot(abscisa, ordenada2, 'r')
-    red_line3 = ax3.plot(abscisa, ordenada3, 'r')
-    plt.pause(0.05)
-    # Make the sound
-    _simplesound.reproductor.set_waveform('sine')
-    _simplesound.make_sound(y1[x], 1)
-    _simplesound.reproductor.set_waveform('flute')
-    _simplesound.make_sound(y2[x], 1)
-    _simplesound.reproductor.set_waveform('pipe organ')
-    _simplesound.make_sound(y3[x], 1)
-    
+input("Press Enter to continue...")
+
+for i in range (1, 4):
+    print(i)
+    for x in range (x_pos_min, x_pos_max):
+        if i==1:
+            # Plot the position line
+            if not x == x_pos_min:
+                line = red_line.pop(0)
+                line.remove()
+            abscisa = np.array([float(data_float1.loc[x,1]), float(data_float1.loc[x,1])])
+            red_line = ax1.plot(abscisa, ordenada1, 'r')
+            plt.pause(0.05)
+            # Make the sound
+            _simplesound.reproductor.set_waveform('sine')
+            _simplesound.make_sound(y1[x], 1)
+            _simplesound.reproductor.set_waveform('flute')
+            _simplesound.make_sound(y4[x], 1)
+            if x == (x_pos_max-1):
+                line = red_line.pop(0)
+                line.remove()
+        if i==2:
+            # Plot the position line
+            if not x == x_pos_min:
+                line = red_line.pop(0)
+                line.remove()
+            abscisa = np.array([float(data_float1.loc[x,1]), float(data_float1.loc[x,1])])
+            red_line = ax2.plot(abscisa, ordenada2, 'r')
+            plt.pause(0.05)
+            # Make the sound
+            _simplesound.reproductor.set_waveform('sine')
+            _simplesound.make_sound(y2[x], 1)
+            _simplesound.reproductor.set_waveform('flute')
+            _simplesound.make_sound(y4[x], 1)
+            if x == (x_pos_max-1):
+                line = red_line.pop(0)
+                line.remove()
+        if i==3:
+            # Plot the position line
+            if not x == x_pos_min:
+                line = red_line.pop(0)
+                line.remove()
+            abscisa = np.array([float(data_float1.loc[x,1]), float(data_float1.loc[x,1])])
+            red_line = ax3.plot(abscisa, ordenada3, 'r')
+            plt.pause(0.05)
+            # Make the sound
+            _simplesound.reproductor.set_waveform('sine')
+            _simplesound.make_sound(y3[x], 1)
+            _simplesound.reproductor.set_waveform('flute')
+            _simplesound.make_sound(y4[x], 1)
+            if x == (x_pos_max-1):
+                line = red_line.pop(0)
+                line.remove()
 # Save sound
-#x1, y1, status = _math.normalize(data_float1.loc[:,1], data_float1.loc[:,2], init=x_pos_min)
-#x, y2, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,2], init=1)
-#x, y3, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,3], init=1)
-#x2, y2, status = _math.normalize(data_float2.loc[:,1], data_float2.loc[:,2], init=x_pos_min)
-#x3, y3, status = _math.normalize(data_float3.loc[:,1], data_float3.loc[:,2], init=x_pos_min)
-wav_name = path1[:-4] + '_sound.wav'
-#_simplesound.save_sound_multicol_stars(wav_name, data_float1.loc[:,1], y1, y2, y3, init=x_pos_min)
+wav_name1 = path1[:-6] + 'O5-unknown.wav'
+wav_name2 = path1[:-6] + 'A5-unknown.wav'
+wav_name3 = path1[:-6] + 'G0-unknown.wav'
+_simplesound.save_sound_multicol_stars(wav_name1, data_float1.loc[:,1], y1, y4, init=x_pos_min)
+_simplesound.save_sound_multicol_stars(wav_name2, data_float1.loc[:,1], y2, y4, init=x_pos_min)
+_simplesound.save_sound_multicol_stars(wav_name3, data_float1.loc[:,1], y3, y4, init=x_pos_min)
 # Print time
 now = datetime.datetime.now()
 print(now.strftime('%Y-%m-%d_%H-%M-%S'))
-# Counter
-i = i + 1
+
+plt.pause(0.5)
+# Showing the above plot
+plt.show()
+plt.close()

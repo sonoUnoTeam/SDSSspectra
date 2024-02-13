@@ -301,7 +301,7 @@ class simpleSound(object):
         # except Exception as e:
         #     self.expErrSs.writeexception(e)
         
-    def save_sound_multicol_stars(self, path, data_x, data_y1, data_y2, data_y3, init=0):
+    def save_sound_multicol_stars(self, path, data_x, data_y1, data_y2, init=0):
         #Se genera un objeto Track
         # try:
         #     output_file = wave.open(path,'w')
@@ -325,14 +325,6 @@ class simpleSound(object):
             #y2
             rep.set_waveform('flute')
             freq = rep.max_freq*data_y2[x]+self.reproductor.min_freq
-            self.env = rep._adsr_envelope()
-            f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
-                delta_t = 1)
-            s = pygame.mixer.Sound(f.astype('int16'))
-            sound_buffer += s.get_raw()
-            #y3
-            rep.set_waveform('celesta')
-            freq = rep.max_freq*data_y3[x]+self.reproductor.min_freq
             self.env = rep._adsr_envelope()
             f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
                 delta_t = 1)
