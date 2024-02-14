@@ -57,7 +57,7 @@ def peakfinder_emission (x, y, peakSensitivity, index):
 
   peaks = pd.DataFrame()
 
-  for i in range (index,y.size):
+  for i in range (index,y.size-1):
     if i == index:
         continue
     if (
@@ -71,7 +71,7 @@ def peakfinder_emission (x, y, peakSensitivity, index):
 
       #//Si la variación del pico es mayor al promedio más el porcentaje del spread. Se guarda el pico con un marcador.
       if (y[i] > avg + porcentaje * spread): #//i -> pico
-        print("pico")
+        #print("pico")
         print ('(' + str(x[i]) + ' : ' + str(y[i]) + ')')
 
         peaks = peaks._append({'x': x[i], 'y': y[i]},ignore_index = True)
@@ -118,7 +118,7 @@ def peakfinder_absorption (x, y, peakSensitivity, index):
 
   peaks = pd.DataFrame()
 
-  for i in range (index,y.size):
+  for i in range (index,y.size-1):
     if i == index:
         continue
     if (
@@ -132,7 +132,7 @@ def peakfinder_absorption (x, y, peakSensitivity, index):
 
       #//Si la variación del pico es mayor al promedio más el porcentaje del spread. Se guarda el pico con un marcador.
       if (y[i] < avg - porcentaje * spread): #//i -> pico
-        print("pico")
+        #print("pico")
         print ('(' + str(x[i]) + ' : ' + str(y[i]) + ')')
 
         peaks = peaks._append({'x': x[i], 'y': y[i]},ignore_index = True)
@@ -223,11 +223,16 @@ if data2.shape[1]<2:
 data_float1 = data1.iloc[1:, :].astype(float)
 data_float2 = data2.iloc[1:, :].astype(float)
 
+#x = data_float1.loc[:,0].to_numpy()
+#y = smooth.savitzky_golay(data_float1.loc[:,1].to_numpy(), 51, 3) 
+x, y, status = _math.average(data_float1.loc[:,0].to_numpy(), data_float1.loc[:,1].to_numpy(), 3)
+print(status)
+
 # Cut first data set
-abs_val_array = np.abs(data_float1.loc[:,0] - 6800)
+"""abs_val_array = np.abs(data_float1.loc[:,0] - 6000)
 x_pos_min = abs_val_array.idxmin()
-abs_val_array = np.abs(data_float1.loc[:,0] - 7200)
-x_pos_max = abs_val_array.idxmin()
+abs_val_array = np.abs(data_float1.loc[:,0] - 7000)
+x_pos_max = abs_val_array.idxmin()"""
 #data_float1 = data1.iloc[x_pos_min:x_pos_max, :].astype(float)
 # Cut second data set
 #data_float2 = data2.iloc[x_pos_min:x_pos_max, :].astype(float)
@@ -242,7 +247,7 @@ if plot_flag:
     ax.set_xlabel(x_name)
     # Separate the name file from the path to set the plot title
     #head, tail = os.path.split(filename)
-    ax.plot(data_float1.loc[:,0], data_float1.loc[:,1], label='Flux-Barred spiral')
+    ax.plot(x, y, label='Flux-Barred spiral')
     #ax.plot(data_float1.loc[:,0], data_float1.loc[:,2], label='Best Fit')
     #ax.plot(data_float1.loc[:,0], data_float1.loc[:,3], label='Sky Flux')
     
@@ -254,19 +259,19 @@ if plot_flag:
     #fig.savefig(plot_path)
     plt.pause(0.001)
 # Normalize the data to sonify
-x1, y1, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,1], init=1)
+#x1, y1, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,1], init=1)
 #x1, y2, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,2], init=1)
 #x1, y3, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,3], init=1)
-x2, y2, status = _math.normalize(data_float2.loc[:,0], data_float2.loc[:,1], init=1)
+#x2, y2, status = _math.normalize(data_float2.loc[:,0], data_float2.loc[:,1], init=1)
 
 # Reproduction
-minval1 = float(np.abs(data_float1.loc[:,1]).min())
+"""minval1 = float(np.abs(data_float1.loc[:,1]).min())
 maxval1 = float(np.abs(data_float1.loc[:,1]).max())
 minval2 = float(data_float2.loc[:,1].min())
 maxval2 = float(data_float2.loc[:,1].max())
 
 ordenada = np.array([min(minval1, minval2), max(maxval1, maxval2)])
-
+"""
 #input("Press Enter to continue...")
 
 """ for x in range (1, data_float1.loc[:,0].size):
@@ -295,15 +300,17 @@ i = i + 1
 
 #peakfinder(data_float1.loc[:,0], data_float1.loc[:,1], 15, 1)
 print('emission')
-emission = peakfinder_emission(data_float1.loc[:,0], data_float1.loc[:,1], 10, 1)
+emission = peakfinder_emission(x, y, 5, 1)
 print('absortion')
-absortion = peakfinder_absorption(data_float1.loc[:,0], data_float1.loc[:,1], 3, 1)
+absortion = peakfinder_absorption(x, y, 3, 1)
 
 if not emission.empty:
-  ax.plot(emission['x'], emission['y'], 'o', label='Peaks')
+  ax.plot(emission['x'], emission['y'], 'rx', label='Emission')
 if not absortion.empty:
-  ax.plot(absortion['x'], absortion['y'], 'o', label='Peaks')
+  ax.plot(absortion['x'], absortion['y'], 'kx', label='Absortion')
     
+#TODO: guardar los picos
+
 ax.legend()
 
 plt.pause(0.5)
