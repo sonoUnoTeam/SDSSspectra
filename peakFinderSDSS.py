@@ -247,8 +247,9 @@ if plot_flag:
     ax.set_xlabel(x_name)
     # Separate the name file from the path to set the plot title
     #head, tail = os.path.split(filename)
-    #ax.plot(data_float1.loc[:,0], data_float1.loc[:,1], label='Flux-Barred spiral')
-    ax.plot(data_float1.loc[:,0], data_float1.loc[:,1], label='Flux-Double nucleus')
+    ax.set_title('SDSS J115537.98-004614.2')
+    ax.plot(data_float1.loc[:,0], data_float1.loc[:,1], label='Flux-Barred spiral')
+    #ax.plot(data_float1.loc[:,0], data_float1.loc[:,1], label='Flux-Double nucleus')
     #ax.plot(data_float1.loc[:,0], data_float1.loc[:,2], label='Best Fit')
     #ax.plot(data_float1.loc[:,0], data_float1.loc[:,3], label='Sky Flux')
     
