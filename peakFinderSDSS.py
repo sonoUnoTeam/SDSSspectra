@@ -225,14 +225,14 @@ data_float2 = data2.iloc[1:, :].astype(float)
 
 #x = data_float1.loc[:,0].to_numpy()
 #y = smooth.savitzky_golay(data_float1.loc[:,1].to_numpy(), 51, 3) 
-x, y, status = _math.average(data_float1.loc[:,0].to_numpy(), data_float1.loc[:,1].to_numpy(), 3)
-print(status)
+#x, y, status = _math.average(data_float1.loc[:,0].to_numpy(), data_float1.loc[:,1].to_numpy(), 3)
+#print(status)
 
 # Cut first data set
-"""abs_val_array = np.abs(data_float1.loc[:,0] - 6000)
+abs_val_array = np.abs(data_float1.loc[:,0] - 6000)
 x_pos_min = abs_val_array.idxmin()
 abs_val_array = np.abs(data_float1.loc[:,0] - 7000)
-x_pos_max = abs_val_array.idxmin()"""
+x_pos_max = abs_val_array.idxmin()
 #data_float1 = data1.iloc[x_pos_min:x_pos_max, :].astype(float)
 # Cut second data set
 #data_float2 = data2.iloc[x_pos_min:x_pos_max, :].astype(float)
@@ -247,7 +247,8 @@ if plot_flag:
     ax.set_xlabel(x_name)
     # Separate the name file from the path to set the plot title
     #head, tail = os.path.split(filename)
-    ax.plot(x, y, label='Flux-Barred spiral')
+    #ax.plot(data_float1.loc[:,0], data_float1.loc[:,1], label='Flux-Barred spiral')
+    ax.plot(data_float1.loc[:,0], data_float1.loc[:,1], label='Flux-Double nucleus')
     #ax.plot(data_float1.loc[:,0], data_float1.loc[:,2], label='Best Fit')
     #ax.plot(data_float1.loc[:,0], data_float1.loc[:,3], label='Sky Flux')
     
@@ -255,7 +256,7 @@ if plot_flag:
     
     ax.legend()
     # Set the path to save the plot and save it
-    plot_path = path1[:-4] + '_plot.png'
+    #plot_path = path1[:-4] + '_plot.png'
     #fig.savefig(plot_path)
     plt.pause(0.001)
 # Normalize the data to sonify
@@ -300,9 +301,9 @@ i = i + 1
 
 #peakfinder(data_float1.loc[:,0], data_float1.loc[:,1], 15, 1)
 print('emission')
-emission = peakfinder_emission(x, y, 5, 1)
+emission = peakfinder_emission(data_float1.loc[:,0], data_float1.loc[:,1], 5, 1)
 print('absortion')
-absortion = peakfinder_absorption(x, y, 3, 1)
+absortion = peakfinder_absorption(data_float1.loc[:,0], data_float1.loc[:,1], 3, 1)
 
 if not emission.empty:
   ax.plot(emission['x'], emission['y'], 'rx', label='Emission')
@@ -312,6 +313,9 @@ if not absortion.empty:
 #TODO: guardar los picos
 
 ax.legend()
+
+plot_path = path1[:-4] + '_plot.png'
+fig.savefig(plot_path)
 
 plt.pause(0.5)
 # Showing the above plot
