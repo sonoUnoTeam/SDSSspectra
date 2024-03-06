@@ -57,12 +57,17 @@ class PredefMathFunctions(object):
     def square(self, x, y):
         
         """
+
+
         This method apply the square function to the data provided. The 
         changes are applied to the y variable.
         
         This method return the new data with a true status or the unchanged
         data with false status.
         """
+
+        #Hago un comentario
+        
         try:
             new_y = np.square(y)
             return x, new_y, True
