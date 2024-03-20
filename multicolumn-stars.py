@@ -11,6 +11,8 @@ import argparse
 import glob
 import numpy as np
 import datetime
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import math
 import pandas as pd
@@ -29,7 +31,7 @@ _simplesound = simpleSound()
 _math = PredefMathFunctions()
 # Sound configurations, predefined at the moment
 _simplesound.reproductor.set_continuous()
-_simplesound.reproductor.set_waveform('celesta')
+_simplesound.reproductor.set_waveform('celesta') # piano; sine
 _simplesound.reproductor.set_time_base(0.01)
 _simplesound.reproductor.set_min_freq(300)
 _simplesound.reproductor.set_max_freq(1500)
@@ -118,6 +120,9 @@ data_float2 = data2.iloc[1:, 1:].astype(float)
 data_float3 = data3.iloc[1:, 1:].astype(float)
 data_float4 = data4.iloc[1:, 1:].astype(float)
 
+#Inicializamos la posición para no tener error cuando no haya recortes
+x_pos_min = 0
+
 # Cut first data set
 abs_val_array = np.abs(data_float1.loc[:,1] - 3700)
 x_pos_min = abs_val_array.idxmin()
@@ -147,7 +152,7 @@ if plot_flag:
     #ax.plot(data_float2.loc[:,0], data_float2.loc[:,1], label='Flux-Double nucleus')
     
     #First plot
-    ax1 = plt.subplot(311)
+    ax1 = plt.subplot(311)      #ax = plt.subplot(111) para un solo plot
     ax1.plot(data_float1.loc[:,1], data_float1.loc[:,2], label='O5 V')
     ax1.plot(data_float4.loc[:,1], data_float4.loc[:,2], label='Unknown')
     #plt.tick_params('x', labelsize=6)
@@ -190,6 +195,7 @@ maxval3 = float(data_float3.loc[:,2].max())
 minval4 = float(data_float4.loc[:,2].min())
 maxval4 = float(data_float4.loc[:,2].max())
 
+# To make reproduction on real time
 ordenada1 = np.array([min(minval1,minval4), max(maxval1,maxval4)])
 ordenada2 = np.array([min(minval2,minval4), max(maxval2,maxval4)])
 ordenada3 = np.array([min(minval3,minval4), max(maxval3,maxval4)])
@@ -247,11 +253,13 @@ for i in range (1, 4):
             if x == (x_pos_max-1):
                 line = red_line.pop(0)
                 line.remove()
+
 # Save sound
 wav_name1 = path1[:-6] + 'O5-unknown.wav'
 wav_name2 = path1[:-6] + 'A5-unknown.wav'
 wav_name3 = path1[:-6] + 'G0-unknown.wav'
-_simplesound.save_sound_multicol_stars(wav_name1, data_float1.loc[:,1], y1, y4, init=x_pos_min)
+_simplesound.save_sound_multicol_stars(wav_name1, data_float1.loc[:,1], y1, y4, init=x_pos_min) 
+#_simplesound.save_sound(wav_name1, data_float1.loc[:,1], data_float1.loc[:,2], init=x_pos_min)
 _simplesound.save_sound_multicol_stars(wav_name2, data_float1.loc[:,1], y2, y4, init=x_pos_min)
 _simplesound.save_sound_multicol_stars(wav_name3, data_float1.loc[:,1], y3, y4, init=x_pos_min)
 # Print time
