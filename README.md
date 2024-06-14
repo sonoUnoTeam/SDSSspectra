@@ -21,10 +21,10 @@ This repository contains data, in audio and graphic format, on celestial bodies.
 3. Create a virtual environment (preferably from your computer's desktop):
 
     • command to create it:
-    ``` python3 -m venv mi_entorno ```
+    ``` python3 -m venv my_env ```
 
     • command to enter:
-    ``` source mi_entorno/bin/activate ```
+    ``` source my_env/bin/activate ```
 
 4. Install inside the virtual environment: Jupyter Notebook
 
@@ -51,10 +51,10 @@ This repository contains data, in audio and graphic format, on celestial bodies.
     • Open CMD and go to the folder where you want to create the virtual environment
 
     • command to create it:
-    ``` python -m venv mi_entorno ```
+    ``` python -m venv my_env ```
 
     • command to enter:
-    ``` mi_entorno\Scripts\activate ```
+    ``` my_env\Scripts\activate ```
 
 4. Install inside the virtual environment: Jupyter Notebook
 
