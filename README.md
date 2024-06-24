@@ -36,7 +36,7 @@ This repository contains data, in audio and graphic format, on celestial bodies.
 
 6. The browser opens automatically, if not it uses the default IP 
 
-    ```127.0.0.1:8888``` or ```localhost:8888```
+    ``` 127.0.0.1:8888 ``` or ``` localhost:8888 ```
 
 ### Windows
 
@@ -45,6 +45,16 @@ This repository contains data, in audio and graphic format, on celestial bodies.
     https://www.python.org/downloads/release/python-3123/
 
 2. You need to install pip on windows operating system (you can also install it from python installer)
+
+Another way to install pip on Windows is the following:
+
+We enter the address: 
+
+https://bootstrap.pypa.io/get-pip.py
+
+We save the file get-pip.py . Then, we open the Windows consola (CMD) and we position ourselves in the directory where we save the .py fila. Finally, we execute:
+
+```python get-pip.py```
 
 3. Create a virtual environment (preferably from your computer's desktop):
 
@@ -67,6 +77,28 @@ This repository contains data, in audio and graphic format, on celestial bodies.
 6. The browser opens automatically, if not it uses the default IP 
 
     ```127.0.0.1:8888``` or ```localhost:8888```
+
+### For both operating systems
+
+Go to the notebook folder to run the desired file, from Jupyter Notebook
+
+• In order to run stars.ipynb you need to have the following libraries installed in your virtual environment:
+
+**Nunpy**: ```pip install nunpy```
+
+**PyGame**: ```pip install pygame```
+
+**Matplotlib**: ```pip install matplotlib```
+
+**Pandas**: ```pip install pandas```
+
+• In order to run SDSS.ipynb you need to have the following libraries installed in your virtual environment:
+
+**Nunpy**: ```pip install nunpy```
+
+**Matplotlib**: ```pip install matplotlib```
+
+**Pandas**: ```pip install pandas```
 
 # How to contribute to the software 
 
