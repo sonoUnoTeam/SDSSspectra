@@ -84,7 +84,7 @@ Go to the notebook folder to run the desired file, from Jupyter Notebook
 
 • In order to run stars.ipynb you need to have the following libraries installed in your virtual environment:
 
-**Nunpy**: ```pip install nunpy```
+**Numpy**: ```pip install numpy```
 
 **PyGame**: ```pip install pygame```
 
@@ -94,7 +94,7 @@ Go to the notebook folder to run the desired file, from Jupyter Notebook
 
 • In order to run SDSS.ipynb you need to have the following libraries installed in your virtual environment:
 
-**Nunpy**: ```pip install nunpy```
+**Numpy**: ```pip install numpy```
 
 **Matplotlib**: ```pip install matplotlib```
 
