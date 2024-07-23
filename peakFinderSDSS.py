@@ -157,7 +157,7 @@ _simplesound.reproductor.set_continuous()
 _simplesound.reproductor.set_waveform('celesta')
 _simplesound.reproductor.set_time_base(0.05)
 _simplesound.reproductor.set_min_freq(300)
-_simplesound.reproductor.set_max_freq(1500)
+_simplesound.reproductor.set_max_freq(800)
 # The argparse library is used to pass the path and extension where the data
 # files are located
 parser = argparse.ArgumentParser()
@@ -259,24 +259,38 @@ if plot_flag:
     # Set the path to save the plot and save it
     #plot_path = path1[:-4] + '_plot.png'
     #fig.savefig(plot_path)
-    plt.pause(0.001)
+    #plt.pause(0.001)
 # Normalize the data to sonify
-#x1, y1, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,1], init=1)
+x1, y1, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,1], init=1)
 #x1, y2, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,2], init=1)
 #x1, y3, status = _math.normalize(data_float1.loc[:,0], data_float1.loc[:,3], init=1)
 #x2, y2, status = _math.normalize(data_float2.loc[:,0], data_float2.loc[:,1], init=1)
 
 # Reproduction
-"""minval1 = float(np.abs(data_float1.loc[:,1]).min())
+minval1 = float(np.abs(data_float1.loc[:,1]).min())
 maxval1 = float(np.abs(data_float1.loc[:,1]).max())
-minval2 = float(data_float2.loc[:,1].min())
-maxval2 = float(data_float2.loc[:,1].max())
+#minval2 = float(data_float2.loc[:,1].min())
+#maxval2 = float(data_float2.loc[:,1].max())
 
-ordenada = np.array([min(minval1, minval2), max(maxval1, maxval2)])
+#ordenada = np.array([min(minval1, minval2), max(maxval1, maxval2)])
+ordenada = np.array([minval1, maxval1])
+
+print(data_float1.loc[:,0].size)
+input("Press Enter to continue...")
+
+print('emission')
+emission = peakfinder_emission(data_float1.loc[:,0], data_float1.loc[:,1], 5, 1)
+print('absortion')
+absortion = peakfinder_absorption(data_float1.loc[:,0], data_float1.loc[:,1], 3, 1)
+
+if not emission.empty:
+  ax.plot(emission['x'], emission['y'], 'rx', label='Emission')
+if not absortion.empty:
+  ax.plot(absortion['x'], absortion['y'], 'kx', label='Absortion')
+
 """
-#input("Press Enter to continue...")
-
-""" for x in range (1, data_float1.loc[:,0].size):
+key = input()
+for x in range (1, data_float1.loc[:,0].size):
     # Plot the position line
     if not x == 1:
         line = red_line.pop(0)
@@ -287,29 +301,36 @@ ordenada = np.array([min(minval1, minval2), max(maxval1, maxval2)])
     # Make the sound
     _simplesound.reproductor.set_waveform('sine')
     _simplesound.make_sound(y1[x], 1)
-    _simplesound.reproductor.set_waveform('flute')
-    _simplesound.make_sound(y2[x], 1) """
+    #To sonify the mark
+    _simplesound.reproductor.set_waveform('square')
+    emission_flag = float(data_float1.loc[x,0]) in emission['x'].unique()
+    absortion_flag = float(data_float1.loc[x,0]) in absortion['x'].unique()
+    if emission_flag:
+        print('emission')
+        index = emission.isin([float(data_float1.loc[x,0])]).any(axis=1).idxmax()
+        _simplesound.make_sound(1, 1)
+    if absortion_flag:
+        print('absortion')
+        index = absortion.isin([float(data_float1.loc[x,0])]).any(axis=1).idxmax()
+        _simplesound.make_sound(0, 1)
+    if emission_flag and absortion_flag:
+        print('both lines')
+        index = emission.isin([float(data_float1.loc[x,0])]).any(axis=1).idxmax()
+        _simplesound.make_sound(0.5, 1)
+    
+    if key == 'q':
+       break
+"""
 
 # Save sound
-#wav_name = path1[:-4] + '_sound.wav'
-#_simplesound.save_sound_multicol(wav_name, data_float1.loc[:,0], y1, y2, init=1)
+wav_name = path1[:-4] + '_sound.wav'
+print(wav_name)
+_simplesound.save_sound_withpeaks(wav_name, data_float1.loc[:,0], y1, absortion, emission, init=1)
 # Print time
 now = datetime.datetime.now()
 print(now.strftime('%Y-%m-%d_%H-%M-%S'))
 # Counter
-i = i + 1
-
-
-#peakfinder(data_float1.loc[:,0], data_float1.loc[:,1], 15, 1)
-print('emission')
-emission = peakfinder_emission(data_float1.loc[:,0], data_float1.loc[:,1], 5, 1)
-print('absortion')
-absortion = peakfinder_absorption(data_float1.loc[:,0], data_float1.loc[:,1], 3, 1)
-
-if not emission.empty:
-  ax.plot(emission['x'], emission['y'], 'rx', label='Emission')
-if not absortion.empty:
-  ax.plot(absortion['x'], absortion['y'], 'kx', label='Absortion')
+#i = i + 1
     
 #TODO: guardar los picos
 
@@ -318,7 +339,7 @@ ax.legend()
 plot_path = path1[:-4] + '_plot.png'
 fig.savefig(plot_path)
 
-plt.pause(0.5)
+#plt.pause(0.5)
 # Showing the above plot
-plt.show()
-plt.close()
+#plt.show()
+#plt.close()

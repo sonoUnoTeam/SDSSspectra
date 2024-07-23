@@ -409,6 +409,67 @@ class simpleSound(object):
         # except Exception as e:
         #     self.expErrSs.writeexception(e)
 
+    def save_sound_withpeaks(self, path, data_x, data_y1, absortion, emission, init=0):
+        #Se genera un objeto Track
+        # try:
+        #     output_file = wave.open(path,'w')
+
+        # except Exception as e:
+        #     self.expErrSs.writeexception(e)
+        #Se recorre el array agregando las notas al Track.
+        #try:
+            #rango, offset = self.reproductor.getRange()
+        rep = self.reproductor
+        sound_buffer=b''
+        freq_status = False
+        for x in range (init, data_x.size):
+            # y1
+            rep.set_waveform('sine')
+            freq = rep.max_freq*data_y1[x]+self.reproductor.min_freq
+            self.env = rep._adsr_envelope()
+            f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
+                delta_t = 1)
+            s = pygame.mixer.Sound(f.astype('int16'))
+            sound_buffer += s.get_raw()
+            #y2
+            rep.set_waveform('square')
+            emission_flag = float(data_x.loc[x]) in emission['x'].unique()
+            absortion_flag = float(data_x.loc[x]) in absortion['x'].unique()
+            if emission_flag:
+                #_simplesound.make_sound(1, 1)
+                freq = rep.max_freq*1+self.reproductor.min_freq
+                freq_status = True
+            if absortion_flag:
+                #_simplesound.make_sound(0, 1)
+                freq = rep.max_freq*0+self.reproductor.min_freq
+                freq_status = True
+            if emission_flag and absortion_flag:
+                freq = rep.max_freq*0.5+self.reproductor.min_freq
+                freq_status = True
+            #freq = rep.max_freq*data_y2[x]+self.reproductor.min_freq
+            if freq_status:
+                self.env = rep._adsr_envelope()
+                f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
+                    delta_t = 1)
+                s = pygame.mixer.Sound(f.astype('int16'))
+                sound_buffer += s.get_raw()
+                freq_status = False
+            # Silence
+            #f = self.env*rep.volume*2**15*rep.generate_waveform(0,
+            #    delta_t = 1)
+            #s = pygame.mixer.Sound(f.astype('int16'))
+            #sound_buffer += s.get_raw()
+            #s = pygame.mixer.Sound(f.astype('int16'))
+            #sound_buffer += s.get_raw()
+
+        with wave.open(path,'wb') as output_file:
+            output_file.setframerate(rep.f_s)
+            output_file.setnchannels(1)
+            output_file.setsampwidth(2)
+            output_file.writeframesraw(sound_buffer)
+            print('Sound saved')
+            #output_file.close()
+
 class tickMark(object):
     def __init__(self):
         #pygame.init()
