@@ -6,7 +6,6 @@ import numpy as np
 import pygame
 import wave
 from scipy import signal
-from data_export.data_export import DataExport as eErr
 import os
 
 #Reproductor de sonido raw
@@ -229,10 +228,10 @@ class reproductorRaw (object):
             value = np.log10(100*value+1)/2 #This is to achieve reasoable values
             print(value)
         if self.mapping == 'frequency':
-            freq = self.max_freq*value+self.min_freq
+            freq = (self.max_freq-self.min_freq)*value+self.min_freq
             vol = self.volume
         else:
-            vol = self.max_volume*value+self.min_volume
+            vol = (self.max_volume-self.min_volume)*value+self.min_volume
             freq = self.fixed_freq
         self.env = self._adsr_envelope()
         f = self.env*vol*2**14*self.generate_waveform(freq)
@@ -243,8 +242,6 @@ class reproductorRaw (object):
 #Esta clase es la que se comunica con la clase principal.
 class simpleSound(object):
     def __init__(self):
-        #instancia de la clase DataExport para imprimir los print y los errores en los archivos correspondientes
-        self.expErrSs = eErr(False)
         #Se instancia la clase que se genera el sonido usando PyGame.
         self.reproductor = reproductorRaw()
     #Éste método modifica el valor para producir la nota y lo envía a la clase reproductorMidi
@@ -258,24 +255,17 @@ class simpleSound(object):
                 # no generaba error, se deja por las dudas.
                 self.reproductor.pitch(0)
         except Exception as e:
-            self.expErrSs.writeexception(e)
+            print(e)
         #En un futuro se puede pedir confirmación al método pitch y devolverla.
     #Aquí se genera el archivo de salida con el sonido, por el momento no depende del tempo seleccionado.
 
     def save_sound(self, path, data_x, data_y, init=0):
-        #Se genera un objeto Track
-        # try:
-        #     output_file = wave.open(path,'w')
-
-        # except Exception as e:
-        #     self.expErrSs.writeexception(e)
-        #Se recorre el array agregando las notas al Track.
         try:
             #rango, offset = self.reproductor.getRange()
             rep = self.reproductor
             sound_buffer=b''
             for x in range (init, data_x.size):
-                freq = rep.max_freq*data_y[x]+self.reproductor.min_freq
+                freq = (rep.max_freq-rep.min_freq)*data_y[x]+rep.min_freq
                 self.env = rep._adsr_envelope()
                 #print(self.env.get_adsr())
                 f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
@@ -292,31 +282,15 @@ class simpleSound(object):
                 #output_file.close()
 
         except Exception as e:
-            self.expErrSs.writeexception(e)
-        #Finalmente se guarda el la ruta seleccionada.
-        # try:
-        #     #MidiFileOut.write_Track(path, localTrack)
-        #     #TODO: Escribir archivo de salida (wav?)
-        #     self.expErrSs.writeinfo("Metodo no implementado")
-        # except Exception as e:
-        #     self.expErrSs.writeexception(e)
+            print(e)
         
     def save_sound_multicol_stars(self, path, data_x, data_y1, data_y2, init=0):
-        #Se genera un objeto Track
-        # try:
-        #     output_file = wave.open(path,'w')
-
-        # except Exception as e:
-        #     self.expErrSs.writeexception(e)
-        #Se recorre el array agregando las notas al Track.
-        #try:
-            #rango, offset = self.reproductor.getRange()
         rep = self.reproductor
         sound_buffer=b''
         for x in range (init, data_x.size):
             # y1
             rep.set_waveform('sine')
-            freq = rep.max_freq*data_y1[x]+self.reproductor.min_freq
+            freq = (rep.max_freq-rep.min_freq)*data_y1[x]+rep.min_freq
             self.env = rep._adsr_envelope()
             f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
                 delta_t = 1)
@@ -324,7 +298,7 @@ class simpleSound(object):
             sound_buffer += s.get_raw()
             #y2
             rep.set_waveform('flute')
-            freq = rep.max_freq*data_y2[x]+self.reproductor.min_freq
+            freq = (rep.max_freq-rep.min_freq)*data_y2[x]+rep.min_freq
             self.env = rep._adsr_envelope()
             f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
                 delta_t = 1)
@@ -344,33 +318,14 @@ class simpleSound(object):
             output_file.setsampwidth(2)
             output_file.writeframesraw(sound_buffer)
             #output_file.close()
-
-        #except Exception as e:
-        #    self.expErrSs.writeexception(e)
-        #Finalmente se guarda el la ruta seleccionada.
-        # try:
-        #     #MidiFileOut.write_Track(path, localTrack)
-        #     #TODO: Escribir archivo de salida (wav?)
-        #     self.expErrSs.writeinfo("Metodo no implementado")
-        # except Exception as e:
-        #     self.expErrSs.writeexception(e)
         
     def save_sound_multicol(self, path, data_x, data_y1, data_y2, init=0):
-        #Se genera un objeto Track
-        # try:
-        #     output_file = wave.open(path,'w')
-
-        # except Exception as e:
-        #     self.expErrSs.writeexception(e)
-        #Se recorre el array agregando las notas al Track.
-        #try:
-            #rango, offset = self.reproductor.getRange()
         rep = self.reproductor
         sound_buffer=b''
         for x in range (init, data_x.size):
             # y1
             rep.set_waveform('sine')
-            freq = rep.max_freq*data_y1[x]+self.reproductor.min_freq
+            freq = (rep.max_freq-rep.min_freq)*data_y1[x]+rep.min_freq
             self.env = rep._adsr_envelope()
             f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
                 delta_t = 1)
@@ -378,7 +333,7 @@ class simpleSound(object):
             sound_buffer += s.get_raw()
             #y2
             rep.set_waveform('flute')
-            freq = rep.max_freq*data_y2[x]+self.reproductor.min_freq
+            freq = (rep.max_freq-rep.min_freq)*data_y2[x]+rep.min_freq
             self.env = rep._adsr_envelope()
             f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
                 delta_t = 1)
@@ -399,33 +354,14 @@ class simpleSound(object):
             output_file.writeframesraw(sound_buffer)
             #output_file.close()
 
-        #except Exception as e:
-        #    self.expErrSs.writeexception(e)
-        #Finalmente se guarda el la ruta seleccionada.
-        # try:
-        #     #MidiFileOut.write_Track(path, localTrack)
-        #     #TODO: Escribir archivo de salida (wav?)
-        #     self.expErrSs.writeinfo("Metodo no implementado")
-        # except Exception as e:
-        #     self.expErrSs.writeexception(e)
-
     def save_sound_withpeaks(self, path, data_x, data_y1, absortion, emission, init=0):
-        #Se genera un objeto Track
-        # try:
-        #     output_file = wave.open(path,'w')
-
-        # except Exception as e:
-        #     self.expErrSs.writeexception(e)
-        #Se recorre el array agregando las notas al Track.
-        #try:
-            #rango, offset = self.reproductor.getRange()
         rep = self.reproductor
         sound_buffer=b''
         freq_status = False
         for x in range (init, data_x.size):
             # y1
             rep.set_waveform('sine')
-            freq = rep.max_freq*data_y1[x]+self.reproductor.min_freq
+            freq = (rep.max_freq-rep.min_freq)*data_y1[x]+rep.min_freq
             self.env = rep._adsr_envelope()
             f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
                 delta_t = 1)
@@ -437,16 +373,15 @@ class simpleSound(object):
             absortion_flag = float(data_x.loc[x]) in absortion['x'].unique()
             if emission_flag:
                 #_simplesound.make_sound(1, 1)
-                freq = rep.max_freq*1+self.reproductor.min_freq
+                freq = (rep.max_freq-rep.min_freq)*1+rep.min_freq
                 freq_status = True
             if absortion_flag:
                 #_simplesound.make_sound(0, 1)
-                freq = rep.max_freq*0+self.reproductor.min_freq
+                freq = (rep.max_freq-rep.min_freq)*0+rep.min_freq
                 freq_status = True
             if emission_flag and absortion_flag:
-                freq = rep.max_freq*0.5+self.reproductor.min_freq
+                freq = (rep.max_freq-rep.min_freq)*0.5+rep.min_freq
                 freq_status = True
-            #freq = rep.max_freq*data_y2[x]+self.reproductor.min_freq
             if freq_status:
                 self.env = rep._adsr_envelope()
                 f = self.env*rep.volume*2**15*rep.generate_waveform(freq,
