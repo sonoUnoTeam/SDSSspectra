@@ -1,4 +1,4 @@
-# sonoUno multicolumn and peak detection script
+# SDSS spectra with peak detection
 
 This development is powered by CONICET-Argentina, Universidad de Mendoza-Argentina and Universidad Tecnológica Narional Regional Mendoza-Argentina.
 
