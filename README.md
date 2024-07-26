@@ -2,7 +2,7 @@
 
 This development is powered by CONICET-Argentina, Universidad de Mendoza-Argentina and Universidad Tecnológica Narional Regional Mendoza-Argentina.
 
-<Img src="logos/logo_conicet.png" width="108"> <Img src="logos/ibio.jpeg" width="70"> <Img src="logos/logo_um.png" width="70"> <Img src="logos/logoUTN-comprimido.jpg" width="115">
+<Img src="logos/logo_conicet.png" width="108"> <Img src="logos/ibio.jpeg" width="70"> <Img src="logos/logo_um.png" width="70"> <Img src="logos/logoUTN-comprimido.jpg" width="117">
 
 # sonoUno-notebook
 
