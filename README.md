@@ -1,3 +1,9 @@
+# sonoUno multicolumn script
+
+This development is powered by CONICET-Argentina, Universidad de Mendoza-Argentina and Universidad Tecnológica Narional Regional Mendoza-Argentina.
+
+<Img src="logos/logo_conicet.png" width="100"> <Img src="logos/ibio.jpeg" width="70"> <Img src="logos/logo_UM.png" width="150"> <Img src="logos/logoUTN-comprimido.jpeg" width="70">
+
 # sonoUno-notebook
 
 This repository contains data, in audio and graphic format, on celestial bodies. Detailed descriptions have been made in Jupyther Notebook.
