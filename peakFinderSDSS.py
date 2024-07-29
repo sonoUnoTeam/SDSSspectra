@@ -17,7 +17,6 @@ import pandas as pd
 
 #Local import
 from data_transform import smooth
-from data_export.data_export import DataExport
 from data_import.data_import import DataImport
 from sound_module.simple_sound import simpleSound
 from data_transform.predef_math_functions import PredefMathFunctions
@@ -148,7 +147,6 @@ def peakfinder_absorption (x, y, peakSensitivity, index):
 
 
 # Instanciate the sonoUno clases needed
-_dataexport = DataExport(False)
 _dataimport = DataImport()
 _simplesound = simpleSound()
 _math = PredefMathFunctions()
