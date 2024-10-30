@@ -17,13 +17,13 @@ import pandas as pd
 
 #Local import
 from data_transform import smooth
-from data_export.data_export import DataExport
+#from data_export.data_export import DataExport
 from data_import.data_import import DataImport
 from sound_module.simple_sound import simpleSound
 from data_transform.predef_math_functions import PredefMathFunctions
 
 # Instanciate the sonoUno clases needed
-_dataexport = DataExport(False)
+#_dataexport = DataExport(False)
 _dataimport = DataImport()
 _simplesound = simpleSound()
 _math = PredefMathFunctions()
@@ -144,6 +144,14 @@ input("Press Enter to continue...")
 
 for x in range (1, data_float1.loc[:,0].size):
     # Plot the position line
+    """
+    Este es el for para reproducir la gráfica con la linea roja y los sonidos;
+    El if se usa para remover la línea roja anterior,
+    luego se calcula la nueva posición en x y se genera la linea roja nueva,
+    se actualiza el plot con plt.pause (aquí se podría guardar la imagen con la nueva línea roja para la web),
+    desde Make sound en adelante, esas 4 líneas setean cada instrumento y sonoriza el punto de cada juego de datos.
+    Este script sonoriza dos archivos de datos, nosotros en la web por ahora solo vamos a a trabajar con un archivo de datos.
+    """
     if not x == 1:
         line = red_line.pop(0)
         line.remove()
